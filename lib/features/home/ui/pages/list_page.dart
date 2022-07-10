@@ -1,15 +1,55 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tech_task/core/router/router.gr.dart';
+import 'package:flutter_tech_task/features/home/data/models/post_model.dart';
+import 'package:flutter_tech_task/features/home/data/sources/posts_repo.dart';
 
-class ListPage extends StatelessWidget {
+class ListPage extends ConsumerWidget {
   const ListPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.yellow,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _posts = ref.watch(postsProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Posts'),
+      ),
+      body: _posts.when(
+        data: (postsOrFailure) => _buildPostsList(context, postsOrFailure),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Text('Error: $err'),
+      ),
     );
   }
 }
+
+Widget _buildPostsList(
+  BuildContext context,
+  Either<Exception, List<PostModel>> postsOrFailure,
+) =>
+    postsOrFailure.fold(
+      (err) => Center(child: Text('Error: $err')),
+      (_posts) => ListView.builder(
+        itemCount: _posts.length,
+        itemBuilder: (context, index) => Card(
+          elevation: 4,
+          child: ListTile(
+            title: Text(
+              _posts[index].title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text(_posts[index].body),
+            onTap: () => AutoRouter.of(context)
+                .push(DetailsRoute(postId: _posts[index].id)),
+          ),
+        ),
+      ),
+    );
+
+
 
 // import 'package:http/http.dart' as http;
 // import 'dart:convert';
