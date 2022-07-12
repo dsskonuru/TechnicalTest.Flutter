@@ -15,7 +15,7 @@ import 'package:flutter/material.dart' as _i5;
 
 import '../../features/home/ui/pages/comments_page.dart' as _i3;
 import '../../features/home/ui/pages/details_page.dart' as _i2;
-import '../../features/home/ui/pages/list_page.dart' as _i1;
+import '../../features/home/ui/pages/home_page.dart' as _i1;
 
 class AppRouter extends _i4.RootStackRouter {
   AppRouter([_i5.GlobalKey<_i5.NavigatorState>? navigatorKey])
@@ -23,9 +23,9 @@ class AppRouter extends _i4.RootStackRouter {
 
   @override
   final Map<String, _i4.PageFactory> pagesMap = {
-    ListRoute.name: (routeData) {
+    HomeRoute.name: (routeData) {
       return _i4.MaterialPageX<dynamic>(
-          routeData: routeData, child: const _i1.ListPage());
+          routeData: routeData, child: const _i1.HomePage());
     },
     DetailsRoute.name: (routeData) {
       final pathParams = routeData.inheritedPathParams;
@@ -47,18 +47,18 @@ class AppRouter extends _i4.RootStackRouter {
 
   @override
   List<_i4.RouteConfig> get routes => [
-        _i4.RouteConfig(ListRoute.name, path: '/'),
+        _i4.RouteConfig(HomeRoute.name, path: '/'),
         _i4.RouteConfig(DetailsRoute.name, path: '/post/:postId'),
         _i4.RouteConfig(CommentsRoute.name, path: '/post/:postId/comments')
       ];
 }
 
 /// generated route for
-/// [_i1.ListPage]
-class ListRoute extends _i4.PageRouteInfo<void> {
-  const ListRoute() : super(ListRoute.name, path: '/');
+/// [_i1.HomePage]
+class HomeRoute extends _i4.PageRouteInfo<void> {
+  const HomeRoute() : super(HomeRoute.name, path: '/');
 
-  static const String name = 'ListRoute';
+  static const String name = 'HomeRoute';
 }
 
 /// generated route for

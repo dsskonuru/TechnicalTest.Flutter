@@ -26,7 +26,7 @@ abstract class PostsApiService extends ChopperService {
   }
 
   static FutureOr<Response> convertPostsResponse(Response response) {
-    final decodedResponse = json.decode(response.bodyString);
+    final decodedResponse = jsonDecode(response.bodyString);
     if (decodedResponse is List) {
       final _posts = decodedResponse
           .map((post) => PostModel.fromJson(post as Map<String, Object?>))
@@ -41,7 +41,7 @@ abstract class PostsApiService extends ChopperService {
   }
 
   static FutureOr<Response> convertCommentsResponse(Response response) {
-    final decodedResponse = json.decode(response.bodyString);
+    final decodedResponse = jsonDecode(response.bodyString);
     debugPrint("Converting Comments!!!");
     debugPrint(decodedResponse.toString());
     if (decodedResponse is List) {

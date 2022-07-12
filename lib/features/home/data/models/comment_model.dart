@@ -17,4 +17,4 @@ class CommentModel with _$CommentModel {
 
   factory CommentModel.fromJson(Map<String, Object?> json) =>
       _$CommentModelFromJson(json);
-}  
+}

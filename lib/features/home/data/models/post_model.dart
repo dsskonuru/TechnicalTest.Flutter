@@ -14,6 +14,5 @@ class PostModel with _$PostModel {
     required int userId,
   }) = _PostModel;
 
-  factory PostModel.fromJson(Map<String, Object?> json)
-      => _$PostModelFromJson(json);
-}  
+  factory PostModel.fromJson(Map<String, Object?> json) => _$PostModelFromJson(json);
+}

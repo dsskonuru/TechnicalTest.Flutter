@@ -41,7 +41,7 @@ placeholder](https://jsonplaceholder.typicode.com) API to complete the home task
     The tab item for the offline post list screen should be
     badged with the number of offline posts that have been saved.
 
-    Only details about the post have to be available to read offline.  Post
+    Only details about the post have to be available to read offline.  PostModel
     comments do not have to be available offline (but it's a bonus if they are).
 
 ## Provided resources

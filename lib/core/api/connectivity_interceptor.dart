@@ -15,7 +15,6 @@ class ConnectivityInterceptor implements RequestInterceptor {
     if (isNotConnected) {
       throw NotConnectedException();
     }
-
     return request;
   }
 }
