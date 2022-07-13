@@ -7,6 +7,7 @@ part 'post_model.g.dart';
 // PostModel model is immutable
 @freezed
 class PostModel with _$PostModel {
+  @JsonSerializable(explicitToJson: true)
   const factory PostModel({
     required int id,
     required String title,

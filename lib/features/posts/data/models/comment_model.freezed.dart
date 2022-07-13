@@ -136,7 +136,8 @@ class __$$_CommentModelCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(explicitToJson: true)
 class _$_CommentModel with DiagnosticableTreeMixin implements _CommentModel {
   const _$_CommentModel(
       {required this.postId,

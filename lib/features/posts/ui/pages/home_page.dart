@@ -1,7 +1,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tech_task/features/home/ui/widgets/bookmarks_view.dart';
-import 'package:flutter_tech_task/features/home/ui/widgets/feed_view.dart.dart';
+import 'package:flutter_tech_task/features/posts/ui/widgets/bookmarks_view.dart';
+import 'package:flutter_tech_task/features/posts/ui/widgets/feed_view.dart.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);

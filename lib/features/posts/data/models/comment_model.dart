@@ -7,6 +7,7 @@ part 'comment_model.g.dart';
 // CommentModel model is immutable
 @freezed
 class CommentModel with _$CommentModel {
+  @JsonSerializable(explicitToJson: true)
   const factory CommentModel({
     required final int postId,
     required final int id,

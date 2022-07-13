@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tech_task/core/router/router.gr.dart';
-// import 'package:logging/logging.dart';
+import 'package:flutter_tech_task/core/theme/theme_data.dart';
+import 'package:logging/logging.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  // _setupLogging();
+  _setupLogging();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -33,16 +35,21 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routeInformationParser: _appRouter.defaultRouteParser(),
-      routerDelegate: _appRouter.delegate(),
+    return ResponsiveSizer(
+      builder: (context, orientation, screenType) => MaterialApp.router(
+        title: 'Flutter Tech Task',
+        theme: themeData(context),
+        routeInformationParser: _appRouter.defaultRouteParser(),
+        routerDelegate: _appRouter.delegate(),
+      ),
     );
   }
 }
 
-// void _setupLogging() {
-//   Logger.root.level = Level.ALL;
-//   Logger.root.onRecord.listen((rec) {
-//     debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
-//   });
-// }
+void _setupLogging() {
+  Logger.root.level =
+      Level.OFF; // TODO: change to Level.INFO when ready to release
+  Logger.root.onRecord.listen((rec) {
+    debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
+  });
+}

@@ -122,7 +122,8 @@ class __$$_PostModelCopyWithImpl<$Res> extends _$PostModelCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable()
+
+@JsonSerializable(explicitToJson: true)
 class _$_PostModel with DiagnosticableTreeMixin implements _PostModel {
   const _$_PostModel(
       {required this.id,

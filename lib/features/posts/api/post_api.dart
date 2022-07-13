@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:chopper/chopper.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_tech_task/core/api/connectivity_interceptor.dart';
-import 'package:flutter_tech_task/features/home/data/models/comment_model.dart';
-import 'package:flutter_tech_task/features/home/data/models/post_model.dart';
+import 'package:flutter_tech_task/features/posts/data/models/comment_model.dart';
+import 'package:flutter_tech_task/features/posts/data/models/post_model.dart';
 
 part 'post_api.chopper.dart';
 
@@ -19,7 +17,6 @@ abstract class PostsApiService extends ChopperService {
       ],
       interceptors: [
         HttpLoggingInterceptor(),
-        ConnectivityInterceptor(),
       ],
     );
     return _$PostsApiService(client);
@@ -42,8 +39,6 @@ abstract class PostsApiService extends ChopperService {
 
   static FutureOr<Response> convertCommentsResponse(Response response) {
     final decodedResponse = jsonDecode(response.bodyString);
-    debugPrint("Converting Comments!!!");
-    debugPrint(decodedResponse.toString());
     if (decodedResponse is List) {
       final _comments = decodedResponse
           .map(
