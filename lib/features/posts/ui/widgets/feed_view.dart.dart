@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tech_task/core/errors/error_ui.dart';
 import 'package:flutter_tech_task/core/router/router.gr.dart';
 import 'package:flutter_tech_task/features/posts/data/models/post_model.dart';
 import 'package:flutter_tech_task/features/posts/ui/providers/posts_provider.dart';
@@ -46,18 +47,19 @@ class FeedView extends ConsumerWidget {
                   loading: () => Colors.grey,
                 ),
                 onPressed: () {
-                  debugPrint("Pressed");
-                  _savedPostIds.whenData((savedPostIds) {
-                    if (savedPostIds.contains(_posts[index].id)) {
-                      ref
-                          .watch(savedPostIdsProvider.notifier)
-                          .remove(_posts[index].id);
-                    } else {
-                      ref
-                          .watch(savedPostIdsProvider.notifier)
-                          .add(_posts[index].id);
-                    }
-                  });
+                  _savedPostIds.whenData(
+                    (savedPostIds) {
+                      if (savedPostIds.contains(_posts[index].id)) {
+                        ref
+                            .watch(savedPostIdsProvider.notifier)
+                            .remove(_posts[index].id);
+                      } else {
+                        ref
+                            .watch(savedPostIdsProvider.notifier)
+                            .add(_posts[index].id);
+                      }
+                    },
+                  );
                 },
               ),
               onTap: () => AutoRouter.of(context)
@@ -66,8 +68,10 @@ class FeedView extends ConsumerWidget {
           ),
         );
       },
-      error: (err, st) => Center(child: Text('Error: $err')),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (err, st) => handleErrorUI(err, st),
     );
   }
 }

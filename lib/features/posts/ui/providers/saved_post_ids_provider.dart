@@ -19,8 +19,8 @@ class SavedPostIdsNotifier extends StateNotifier<AsyncValue<Set<int>>> {
 
   Future<void> getSavedPostIds() async {
     final _savedPostIds = await _localDataSource.fetchSavedPostIds();
-    state = AsyncData(_savedPostIds.value!.toSet());
-    debugPrint(state.toString());
+    debugPrint(_savedPostIds.toString());
+    state = AsyncData(_savedPostIds.toSet());
   }
 
   Future<void> add(int postId) async {
@@ -28,6 +28,7 @@ class SavedPostIdsNotifier extends StateNotifier<AsyncValue<Set<int>>> {
     await _localDataSource.savePost(postId);
     final _updatedState = {...state.value!, postId};
     await _localDataSource.updateSavedPostIds(_updatedState.toList());
+    debugPrint(_updatedState.toString());
     state = AsyncData(_updatedState);
   }
 

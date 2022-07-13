@@ -16,10 +16,10 @@ class RemoteDataSource {
   RemoteDataSource(this._postApiService);
   final PostsApiService _postApiService;
 
-  Future<AsyncValue<List<PostModel>>> getPostsList() async {
+  Future<AsyncValue<List<PostModel>>> fetchPostsList() async {
     try {
       final Response<List<PostModel>> response =
-          await _postApiService.getPosts();
+          await _postApiService.fetchPosts();
       return AsyncData(response.body!);
     } on SocketException {
       return AsyncError(NoConnectionFailure());
@@ -30,10 +30,10 @@ class RemoteDataSource {
     }
   }
 
-  Future<AsyncValue<PostModel>> getPost(int postId) async {
+  Future<AsyncValue<PostModel>> fetchPost(int postId) async {
     try {
       final Response<PostModel> response =
-          await _postApiService.getPost(postId);
+          await _postApiService.fetchPost(postId);
       return AsyncData(response.body!);
     } on SocketException {
       return AsyncError(NoConnectionFailure());
@@ -44,10 +44,10 @@ class RemoteDataSource {
     }
   }
 
-  Future<AsyncValue<List<CommentModel>>> getComments(int postId) async {
+  Future<AsyncValue<List<CommentModel>>> fetchComments(int postId) async {
     try {
       final Response<List<CommentModel>> response =
-          await _postApiService.getComments(postId);
+          await _postApiService.fetchComments(postId);
       return AsyncData(response.body!);
     } on SocketException {
       return AsyncError(NoConnectionFailure());

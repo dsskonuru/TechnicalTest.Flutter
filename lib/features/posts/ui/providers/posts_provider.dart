@@ -12,11 +12,11 @@ final postsProvider = StateNotifierProvider.autoDispose<PostsNotifier,
 
 class PostsNotifier extends StateNotifier<AsyncValue<List<PostModel>>> {
   PostsNotifier(this._remoteDataSource) : super(const AsyncLoading()) {
-    getPostsList();
+    fetchPostsList();
   }
   final RemoteDataSource _remoteDataSource;
 
-  Future<void> getPostsList() async {
-    state = await _remoteDataSource.getPostsList();
+  Future<void> fetchPostsList() async {
+    state = await _remoteDataSource.fetchPostsList();
   }
 }

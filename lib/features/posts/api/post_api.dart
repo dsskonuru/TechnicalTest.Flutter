@@ -53,13 +53,13 @@ abstract class PostsApiService extends ChopperService {
 
   @Get()
   @FactoryConverter(response: convertPostsResponse)
-  Future<Response<List<PostModel>>> getPosts();
+  Future<Response<List<PostModel>>> fetchPosts();
 
   @Get(path: '/{id}')
   @FactoryConverter(response: convertPostsResponse)
-  Future<Response<PostModel>> getPost(@Path('id') int id);
+  Future<Response<PostModel>> fetchPost(@Path('id') int id);
 
   @Get(path: '/{id}/comments')
   @FactoryConverter(response: convertCommentsResponse)
-  Future<Response<List<CommentModel>>> getComments(@Path('id') int id);
+  Future<Response<List<CommentModel>>> fetchComments(@Path('id') int id);
 }

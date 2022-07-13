@@ -16,22 +16,23 @@ final postProvider = StateNotifierProvider.autoDispose
 class PostNotifier extends StateNotifier<AsyncValue<PostModel>> {
   PostNotifier(this._localDataSource, this._remoteDataSource, this._postId)
       : super(const AsyncLoading()) {
-    getPost(_postId);
+    fetchPost(_postId);
   }
   final LocalDataSource _localDataSource;
   final RemoteDataSource _remoteDataSource;
   final int _postId;
 
-  Future<void> getPost(int postId) async {
-    final _post = await _remoteDataSource.getPost(postId);
-    if (_post.hasError && _post.error is NoConnectionFailure) {
+  Future<void> fetchPost(int postId) async {
+    state = const AsyncLoading();
+    final _asyncPost = await _remoteDataSource.fetchPost(postId);
+    if (_asyncPost.hasError && _asyncPost.error is NoConnectionFailure) {
       final _savedPostIds = await _localDataSource.fetchSavedPostIds();
-      if (_savedPostIds.value!.contains(postId)) {
+      if (_savedPostIds.contains(postId)) {
         final _savedPost = await _localDataSource.fetchSavedPost(postId);
-        state = _savedPost;
+        state = AsyncData(_savedPost);
       }
     } else {
-      state = _post;
+      state = _asyncPost;
     }
   }
 }

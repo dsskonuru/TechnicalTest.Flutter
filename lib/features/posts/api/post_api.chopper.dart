@@ -17,7 +17,7 @@ class _$PostsApiService extends PostsApiService {
   final definitionType = PostsApiService;
 
   @override
-  Future<Response<List<PostModel>>> getPosts() {
+  Future<Response<List<PostModel>>> fetchPosts() {
     final $url = '/posts';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<List<PostModel>, PostModel>($request,
@@ -25,7 +25,7 @@ class _$PostsApiService extends PostsApiService {
   }
 
   @override
-  Future<Response<PostModel>> getPost(int id) {
+  Future<Response<PostModel>> fetchPost(int id) {
     final $url = '/posts/${id}';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<PostModel, PostModel>($request,
@@ -33,7 +33,7 @@ class _$PostsApiService extends PostsApiService {
   }
 
   @override
-  Future<Response<List<CommentModel>>> getComments(int id) {
+  Future<Response<List<CommentModel>>> fetchComments(int id) {
     final $url = '/posts/${id}/comments';
     final $request = Request('GET', $url, client.baseUrl);
     return client.send<List<CommentModel>, CommentModel>($request,

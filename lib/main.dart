@@ -4,18 +4,14 @@ import 'package:flutter_tech_task/core/router/router.gr.dart';
 import 'package:flutter_tech_task/core/theme/theme_data.dart';
 import 'package:logging/logging.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   _setupLogging();
   runApp(const ProviderScope(child: MyApp()));
 }
 
 final container = ProviderContainer();
-
-final sharedPreferencesProvider = Provider<Future<SharedPreferences>>(
-  (ref) async => SharedPreferences.getInstance(),
-);
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);

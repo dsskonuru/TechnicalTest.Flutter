@@ -19,20 +19,20 @@ class CommentsNotifier extends StateNotifier<AsyncValue<List<CommentModel>>> {
     this._remoteDataSource,
     this._postId,
   ) : super(const AsyncLoading()) {
-    getComments(_postId);
+    fetchComments(_postId);
   }
   final LocalDataSource _localDataSource;
   final RemoteDataSource _remoteDataSource;
   final int _postId;
 
-  Future<void> getComments(int postId) async {
-    final _comments = await _remoteDataSource.getComments(postId);
+  Future<void> fetchComments(int postId) async {
+    final _comments = await _remoteDataSource.fetchComments(postId);
     if (_comments.hasError && _comments.error is NoConnectionFailure) {
-      final _savedPostIds = await _localDataSource.fetchSavedPostIds();
-      if (_savedPostIds.value!.contains(postId)) {
+      final _postIds = await _localDataSource.fetchSavedPostIds();
+      if (_postIds.contains(postId)) {
         final _savedComments =
             await _localDataSource.fetchSavedComments(postId);
-        state = _savedComments;
+        state = AsyncData(_savedComments);
       }
     } else {
       state = _comments;

@@ -1,7 +1,7 @@
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tech_task/features/posts/ui/widgets/bookmarks_view.dart';
 import 'package:flutter_tech_task/features/posts/ui/widgets/feed_view.dart.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -27,25 +27,29 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Center(child: Text('Posts')),
+        title: const Center(child: Text('{JSON} Placeholder Posts')),
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
-      bottomNavigationBar: AnimatedBottomNavigationBar(
-        backgroundColor: Colors.lightBlueAccent,
-        icons: const <IconData>[
-          Icons.rss_feed_rounded,
-          Icons.collections_bookmark_rounded,
+      bottomNavigationBar: SalomonBottomBar(
+        currentIndex: _selectedIndex,
+        onTap: (i) => _onItemTapped(i),
+        items: [
+          /// Posts
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.rss_feed_rounded),
+            title: const Text("Posts"),
+            selectedColor: Colors.purple,
+          ),
+
+          /// Bookmarks
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.collections_bookmark_rounded),
+            title: const Text("Bookmarks"),
+            selectedColor: Colors.pink,
+          ),
         ],
-        activeColor: Colors.amber[800],
-        leftCornerRadius: 32.0,
-        rightCornerRadius: 32.0,
-        inactiveColor: Colors.grey[600],
-        blurEffect: true,
-        onTap: _onItemTapped,
-        activeIndex: _selectedIndex,
-        gapLocation: GapLocation.none,
       ),
     );
   }

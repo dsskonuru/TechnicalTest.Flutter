@@ -1,12 +1,11 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tech_task/core/errors/failures.dart';
 import 'package:flutter_tech_task/features/posts/data/models/comment_model.dart';
 import 'package:flutter_tech_task/features/posts/data/models/post_model.dart';
 import 'package:flutter_tech_task/features/posts/data/sources/remote_data_source.dart';
-import 'package:flutter_tech_task/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final localDataSourceProvider = Provider<LocalDataSource>((ref) {
   final _remoteDataSource = ref.read(remoteDataSourceProvider);
@@ -18,61 +17,55 @@ class LocalDataSource {
   final RemoteDataSource _remoteDataSource;
 
   Future<void> updateSavedPostIds(List<int> savedPostIds) async {
-    final prefs = await container.read(sharedPreferencesProvider);
+    final prefs = await SharedPreferences.getInstance();
     final _isSaved = await prefs.setStringList(
-      "savedPostsIds",
+      "saved_post_ids",
       savedPostIds.map((postId) => postId.toString()).toList(),
     );
-    if (_isSaved) {
-      debugPrint(savedPostIds.toString());
-      return;
-    } else {
+    if (!_isSaved) {
       throw Exception("Failed to save post ids");
     }
   }
 
-  Future<AsyncValue<List<int>>> fetchSavedPostIds() async {
+  Future<List<int>> fetchSavedPostIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedPostIds = prefs.getStringList("saved_post_ids");
+    if (savedPostIds != null) {
+      return savedPostIds.map((postId) => int.parse(postId)).toList();
+    } else {
+      return [];
+    }
+  }
+
+  Future<AsyncValue<void>> savePost(int postId) async {
+    final prefs = await SharedPreferences.getInstance();
     try {
-      final prefs = await container.read(sharedPreferencesProvider);
-      final savedPostIds = prefs.getStringList("savedPostsIds");
-      if (savedPostIds == null) {
-        return const AsyncData([]);
-      } else {
-        return AsyncData(
-          savedPostIds.map((postId) => int.parse(postId)).toList(),
-        );
+      final AsyncValue<PostModel> _asyncPost =
+          await _remoteDataSource.fetchPost(postId);
+      final PostModel post = _asyncPost.value!;
+      final String _postJson = jsonEncode(post.toJson());
+      final _isSaved = await prefs.setString("post_$postId", _postJson);
+
+      final AsyncValue<List<CommentModel>> _asyncComments =
+          await _remoteDataSource.fetchComments(postId);
+      final List<CommentModel> comments = _asyncComments.value!;
+      final String _commentsJson = jsonEncode(comments);
+      final _isSavedComments =
+          await prefs.setString("comments_$postId", _commentsJson);
+
+      if (!_isSaved || !_isSavedComments) {
+        throw Exception("Failed to save post");
       }
-    } on Exception catch (e) {
+      return const AsyncData(null);
+    } on Failure catch (e) {
       return AsyncError(e);
     }
   }
 
-  Future<void> savePost(int postId) async {
-    final prefs = await container.read(sharedPreferencesProvider);
-    bool _isPostSaved = false;
-    await _remoteDataSource.getPost(postId).then((_asyncPost) async {
-      final String _postJson = jsonEncode(_asyncPost.value!.toJson());
-      _isPostSaved = await prefs.setString(postId.toString(), _postJson);
-    });
-    bool _areCommentsSaved = false;
-    await _remoteDataSource.getComments(postId).then((_asyncComments) async {
-      final String _commentJson = jsonEncode(_asyncComments.value);
-      _areCommentsSaved = await prefs.setString(
-        "${postId}_comments",
-        _commentJson,
-      );
-    });
-    if (_isPostSaved && _areCommentsSaved) {
-      return;
-    } else {
-      throw Exception("Failed to save post");
-    }
-  }
-
   Future<void> removeSavedPost(int postId) async {
-    final prefs = await container.read(sharedPreferencesProvider);
-    final _postRemoval = await prefs.remove(postId.toString());
-    final _commentsRemoval = await prefs.remove("${postId}_comments");
+    final prefs = await SharedPreferences.getInstance();
+    final _postRemoval = await prefs.remove("post_$postId");
+    final _commentsRemoval = await prefs.remove("comments_$postId");
     if (_postRemoval && _commentsRemoval) {
       return;
     } else {
@@ -80,54 +73,40 @@ class LocalDataSource {
     }
   }
 
-  Future<AsyncValue<PostModel>> fetchSavedPost(int postId) async {
-    final prefs = await container.read(sharedPreferencesProvider);
-    final String? _postJson = prefs.getString(postId.toString());
+  Future<PostModel> fetchSavedPost(int postId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? _postJson = prefs.getString("post_$postId");
     if (_postJson != null) {
       final PostModel _post =
           PostModel.fromJson(jsonDecode(_postJson) as Map<String, dynamic>);
-      return AsyncData(_post);
+      return _post;
     } else {
-      return AsyncError(Exception("Failed to fetch post $postId"));
+      throw Exception("Failed to fetch post");
     }
   }
 
-  Future<AsyncValue<List<CommentModel>>> fetchSavedComments(int postId) async {
-    final prefs = await container.read(sharedPreferencesProvider);
-    final String? _commentsJson = prefs.getString("${postId}_comments");
+  Future<List<CommentModel>> fetchSavedComments(int postId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? _commentsJson = prefs.getString("comments_$postId");
     if (_commentsJson != null) {
       final List<CommentModel> _comments = (jsonDecode(_commentsJson) as List)
           .map(
             (comment) => CommentModel.fromJson(comment as Map<String, dynamic>),
           )
           .toList();
-      return AsyncData(_comments);
+      return _comments;
     } else {
-      return AsyncError(Exception("Failed to fetch comments for post $postId"));
+      throw Exception("Failed to fetch comments for post $postId");
     }
   }
 
-  Future<AsyncValue<List<PostModel>>> fetchSavedPosts() async {
-    final _asyncSavedPostIds = await fetchSavedPostIds();
-    return _asyncSavedPostIds.when(
-      data: (_savedPostIds) async {
-        if (_savedPostIds.isNotEmpty) {
-          final List<PostModel> _posts = [];
-          for (final postId in _savedPostIds) {
-            final _asyncSavedPost = await fetchSavedPost(postId);
-            _asyncSavedPost.whenData((_savedPost) {
-              _posts.add(_savedPost);
-            });
-          }
-          return AsyncData(_posts);
-        } else {
-          return AsyncError(NoBookmarkedPostsFailure());
-        }
-      },
-      error: (_error, stackTrace) {
-        return AsyncError(_error);
-      },
-      loading: () => const AsyncLoading(),
-    );
+  Future<List<PostModel>> fetchSavedPosts() async {
+    final List<int> _savedPostIds = await fetchSavedPostIds();
+    final List<PostModel> _posts = [];
+    for (final postId in _savedPostIds) {
+      final _savedPost = await fetchSavedPost(postId);
+      _posts.add(_savedPost);
+    }
+    return _posts;
   }
 }
