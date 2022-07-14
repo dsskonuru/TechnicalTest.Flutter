@@ -48,19 +48,16 @@ class FeedView extends ConsumerWidget {
                 ),
                 onPressed: () {
                   debugPrint(_posts[index].id.toString());
-                  _savedPostIds.whenData(
-                    (savedPostIds) {
-                      if (savedPostIds.contains(_posts[index].id)) {
-                        ref
-                            .watch(savedPostIdsProvider.notifier)
-                            .remove(_posts[index].id);
-                      } else {
-                        ref
-                            .watch(savedPostIdsProvider.notifier)
-                            .add(_posts[index].id);
-                      }
-                    },
-                  );
+                  final savedPostIds = _savedPostIds.value ?? {};
+                  if (savedPostIds.contains(_posts[index].id)) {
+                    ref
+                        .watch(savedPostIdsProvider.notifier)
+                        .remove(_posts[index].id);
+                  } else {
+                    ref
+                        .watch(savedPostIdsProvider.notifier)
+                        .add(_posts[index].id);
+                  }
                 },
               ),
               onTap: () => AutoRouter.of(context)

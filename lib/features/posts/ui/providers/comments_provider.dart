@@ -27,7 +27,7 @@ class CommentsNotifier extends StateNotifier<AsyncValue<List<CommentModel>>> {
 
   Future<void> fetchComments(int postId) async {
     final _comments = await _remoteDataSource.fetchComments(postId);
-    if (_comments.hasError && _comments.error is NoConnectionFailure) {
+    if (_comments.error == NoConnectionFailure) {
       final _postIds = await _localDataSource.fetchSavedPostIds();
       if (_postIds.contains(postId)) {
         final _savedComments =

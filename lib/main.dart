@@ -43,8 +43,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 void _setupLogging() {
-  Logger.root.level =
-      Level.OFF; // TODO: change to Level.INFO when ready to release
+  Logger.root.level = Level.INFO;
   Logger.root.onRecord.listen((rec) {
     debugPrint('${rec.level.name}: ${rec.time}: ${rec.message}');
   });

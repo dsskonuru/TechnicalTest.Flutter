@@ -25,7 +25,7 @@ class PostNotifier extends StateNotifier<AsyncValue<PostModel>> {
   Future<void> fetchPost(int postId) async {
     state = const AsyncLoading();
     final _asyncPost = await _remoteDataSource.fetchPost(postId);
-    if (_asyncPost.hasError && _asyncPost.error is NoConnectionFailure) {
+    if (_asyncPost.error == NoConnectionFailure) {
       final _savedPostIds = await _localDataSource.fetchSavedPostIds();
       if (_savedPostIds.contains(postId)) {
         final _savedPost = await _localDataSource.fetchSavedPost(postId);

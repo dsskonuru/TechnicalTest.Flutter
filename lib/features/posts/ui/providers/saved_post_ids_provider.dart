@@ -11,7 +11,7 @@ final savedPostIdsProvider = StateNotifierProvider.autoDispose<
 );
 
 class SavedPostIdsNotifier extends StateNotifier<AsyncValue<Set<int>>> {
-  SavedPostIdsNotifier(this._localDataSource) : super(const AsyncLoading()) {
+  SavedPostIdsNotifier(this._localDataSource) : super(const AsyncData(<int>{})) {
     getSavedPostIds();
   }
 

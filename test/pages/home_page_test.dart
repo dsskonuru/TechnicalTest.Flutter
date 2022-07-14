@@ -1,11 +1,15 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_tech_task/features/posts/data/models/post_model.dart';
 import 'package:flutter_tech_task/features/posts/data/sources/remote_data_source.dart';
 import 'package:flutter_tech_task/features/posts/ui/pages/home_page.dart';
+import 'package:flutter_tech_task/features/posts/ui/widgets/bookmarks_view.dart';
 import 'package:flutter_tech_task/features/posts/ui/widgets/feed_view.dart.dart';
 import 'package:flutter_tech_task/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../test_resources.dart';
 
 class MockRemoteDataSource extends Mock implements RemoteDataSource {}
 
@@ -17,13 +21,6 @@ void main() {
   setUp(() {
     mockRemoteDataSource = MockRemoteDataSource();
   });
-
-  const List<PostModel> postsList = [
-    PostModel(id: 1, title: 'title 1', body: 'body 1', userId: 101),
-    PostModel(id: 2, title: 'title 2', body: 'body 2', userId: 102),
-    PostModel(id: 3, title: 'title 3', body: 'body 3', userId: 103),
-    PostModel(id: 4, title: 'title 4', body: 'body 4', userId: 104),
-  ];
 
   group("HomePage", () {
     testWidgets("FeedView is built and the posts are displayed",
@@ -54,5 +51,51 @@ void main() {
         expect(find.text(postsList[i].body), findsOneWidget);
       }
     });
+
+    testWidgets(
+      "Able to save posts and view it in the BookmarksView",
+      (WidgetTester tester) async {
+        // arrange
+        when(() => mockRemoteDataSource.fetchPostsList()).thenAnswer(
+          (invocation) => Future.value(const AsyncData(postsList)),
+        );
+        SharedPreferences.setMockInitialValues({"saved_post_ids": []});
+        when(() => mockRemoteDataSource.fetchPost(1))
+            .thenAnswer((invocation) => Future.value(AsyncData(postsList[0])));
+        when(() => mockRemoteDataSource.fetchComments(1)).thenAnswer(
+          (invocation) => Future.value(const AsyncData(comments)),
+        );
+
+        // act and assert
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              remoteDataSourceProvider.overrideWithValue(mockRemoteDataSource),
+            ],
+            child: const MyApp(),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // * Save the first post
+        expect(find.byIcon(Icons.bookmark_border_rounded), findsNWidgets(4));
+        await tester.tap(find.byIcon(Icons.bookmark_border_rounded).first);
+        await tester.pumpAndSettle();
+
+        // * Make sure the first post is saved
+        final prefs = await SharedPreferences.getInstance();
+        final result = prefs.getStringList("saved_post_ids");
+        expect(result, [1.toString()]);
+
+        // * Switch to Bookmark View
+        await tester.tap(find.byIcon(Icons.collections_bookmark_rounded));
+        await tester.pumpAndSettle();
+
+        // * Make sure the bookmarked post is displayed
+        expect(find.byType(BookmarksView), findsOneWidget);
+        expect(find.text('title 1'), findsOneWidget);
+      },
+    );
   });
 }
