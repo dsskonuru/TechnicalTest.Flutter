@@ -15,8 +15,6 @@ import '../test_resources.dart';
 
 class MockRemoteDataSource extends Mock implements RemoteDataSource {}
 
-class MockNavigatorObserver extends Mock implements NavigatorObserver {}
-
 void main() {
   late MockRemoteDataSource mockRemoteDataSource;
 
