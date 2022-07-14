@@ -47,6 +47,7 @@ class FeedView extends ConsumerWidget {
                   loading: () => Colors.grey,
                 ),
                 onPressed: () {
+                  debugPrint(_posts[index].id.toString());
                   _savedPostIds.whenData(
                     (savedPostIds) {
                       if (savedPostIds.contains(_posts[index].id)) {

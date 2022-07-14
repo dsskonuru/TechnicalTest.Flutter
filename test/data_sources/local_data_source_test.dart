@@ -88,8 +88,10 @@ void main() {
       expect(savedPostJson, jsonEncode(post.toJson()));
 
       final String savedCommentsJson = prefs.getString("comments_1")!;
-      expect(savedCommentsJson,
-          jsonEncode(comments.map((e) => e.toJson()).toList()));
+      expect(
+        savedCommentsJson,
+        jsonEncode(comments.map((e) => e.toJson()).toList()),
+      );
     });
   });
 }
