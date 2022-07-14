@@ -54,6 +54,7 @@ void main() {
 
         // * DetailsPage is build and selected post is displayed
         expect(find.byType(DetailsPage), findsOneWidget);
+        expect(find.text("title 1"), findsOneWidget);
         expect(find.text("body 1"), findsOneWidget);
       },
     );
@@ -99,6 +100,7 @@ void main() {
         await tester.pump();
 
         // * DetailsPage is build and selected post is displayed
+        expect(find.text("title 1"), findsOneWidget);
         expect(find.text("body 1"), findsOneWidget);
       },
     );

@@ -31,6 +31,7 @@ class CommentsPage extends ConsumerWidget {
                     _comments[index].name,
                     style: Theme.of(context).textTheme.headline6,
                   ),
+                  
                   const SizedBox(height: 8),
                   Text(
                     _comments[index].email,

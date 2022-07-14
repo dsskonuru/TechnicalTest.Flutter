@@ -66,7 +66,11 @@ void main() {
 
         // * Comments page is built and comments are displayed
         expect(find.byType(CommentsPage), findsOneWidget);
-        expect(find.text("email 1"), findsOneWidget);
+        for (final comment in comments) {
+          expect(find.text(comment.name), findsOneWidget);
+          expect(find.text(comment.email), findsOneWidget);
+          expect(find.text(comment.body), findsOneWidget);
+        }
       },
     );
 
@@ -119,7 +123,12 @@ void main() {
         await tester.pumpAndSettle();
 
         // * Comments Page is built and selected post is displayed
-        expect(find.text("email 1"), findsOneWidget);
+        expect(find.byType(CommentsPage), findsOneWidget);
+        for (final comment in comments) {
+          expect(find.text(comment.name), findsOneWidget);
+          expect(find.text(comment.email), findsOneWidget);
+          expect(find.text(comment.body), findsOneWidget);
+        }
       },
     );
   });
