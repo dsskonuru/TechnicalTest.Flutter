@@ -37,7 +37,8 @@ void main() {
         when(() => mockRemoteDataSource.fetchPost(1))
             .thenAnswer((invocation) => Future.value(AsyncData(postsList[0])));
         when(() => mockRemoteDataSource.fetchComments(1)).thenAnswer(
-            (invocation) => Future.value(const AsyncData(comments)));
+          (invocation) => Future.value(const AsyncData(comments)),
+        );
 
         // act and assert
         await tester.pumpWidget(
