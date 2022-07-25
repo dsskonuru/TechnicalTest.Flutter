@@ -1,11 +1,10 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tech_task/core/errors/error_ui.dart';
-import 'package:flutter_tech_task/core/router/router.gr.dart';
 import 'package:flutter_tech_task/features/posts/data/models/post_model.dart';
 import 'package:flutter_tech_task/features/posts/ui/providers/bookmarks_provider.dart';
-import 'package:lottie/lottie.dart';
+import 'package:flutter_tech_task/features/posts/ui/widgets/bookmark_widget.dart';
+import 'package:flutter_tech_task/features/posts/ui/widgets/no_bookmarks_widget.dart';
 
 class BookmarksView extends ConsumerWidget {
   const BookmarksView({Key? key}) : super(key: key);
@@ -13,45 +12,17 @@ class BookmarksView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AsyncValue<List<PostModel>> _bookmarks = ref.watch(bookmarksProvider);
-
     return _bookmarks.when(
       data: (_bookmarks) {
         if (_bookmarks.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Lottie.asset(
-                  'assets/animations/no-bookmarks.json',
-                  height: 200,
-                  width: 200,
-                ),
-                const Text(
-                  "You don't have any bookmarked posts yet",
-                ),
-              ],
-            ),
-          );
+          return const NoBookmarksWidget();
         }
         return ListView.builder(
           itemCount: _bookmarks.length,
-          itemBuilder: (context, index) => Card(
-            elevation: 4,
-            child: ListTile(
-              title: Text(
-                _bookmarks[index].title,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(_bookmarks[index].body),
-              onTap: () => AutoRouter.of(context)
-                  .push(DetailsRoute(postId: _bookmarks[index].id)),
-            ),
-          ),
+          itemBuilder: (context, index) => BookmarkWidget(_bookmarks[index]),
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (err, st) => handleErrorUI(err, st),
     );
   }

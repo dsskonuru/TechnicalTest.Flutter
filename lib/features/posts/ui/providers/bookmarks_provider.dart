@@ -13,14 +13,14 @@ final bookmarksProvider = StateNotifierProvider.autoDispose<BookmarksNotifier,
 
 class BookmarksNotifier extends StateNotifier<AsyncValue<List<PostModel>>> {
   BookmarksNotifier(this._localDataSource) : super(const AsyncLoading()) {
-    fetchSavedPosts();
+    _fetchSavedPosts();
   }
   final LocalDataSource _localDataSource;
 
-  Future<void> fetchSavedPosts() async {
+  Future<void> _fetchSavedPosts() async {
     try {
       final List<PostModel> _savedPosts =
-          await _localDataSource.fetchSavedPosts();
+          await _localDataSource.getPosts();
       state = AsyncData(_savedPosts);
     } on Failure catch (e) {
       state = AsyncError(e);

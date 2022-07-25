@@ -12,32 +12,30 @@ final savedPostIdsProvider = StateNotifierProvider.autoDispose<
 
 class SavedPostIdsNotifier extends StateNotifier<AsyncValue<Set<int>>> {
   SavedPostIdsNotifier(this._localDataSource) : super(const AsyncData(<int>{})) {
-    getSavedPostIds();
+    _getSavedPostIds();
   }
 
   final LocalDataSource _localDataSource;
 
-  Future<void> getSavedPostIds() async {
-    final _savedPostIds = await _localDataSource.fetchSavedPostIds();
+  Future<void> _getSavedPostIds() async {
+    final _savedPostIds = await _localDataSource.getPostIds();
     debugPrint(_savedPostIds.toString());
     state = AsyncData(_savedPostIds.toSet());
   }
 
   Future<void> add(int postId) async {
-    // state = const AsyncLoading();
-    await _localDataSource.savePost(postId);
+    await _localDataSource.savePostAndComments(postId);
     final _updatedState = {...state.value!, postId};
-    await _localDataSource.updateSavedPostIds(_updatedState.toList());
+    await _localDataSource.savePostIds(_updatedState.toList());
     debugPrint(_updatedState.toString());
     state = AsyncData(_updatedState);
   }
 
   Future<void> remove(int postId) async {
-    // state = const AsyncLoading();
-    await _localDataSource.removeSavedPost(postId);
+    await _localDataSource.removePost(postId);
     final _state = state.value!;
     _state.remove(postId);
-    await _localDataSource.updateSavedPostIds(state.value!.toList());
+    await _localDataSource.savePostIds(state.value!.toList());
     state = AsyncData(_state);
   }
 }

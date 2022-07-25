@@ -19,8 +19,3 @@ class NoConnectionFailure extends Failure {
   final String? messsage;
   NoConnectionFailure([this.messsage]);
 }
-
-// class NoBookmarkedPostsFailure extends Failure {
-//   final String? messsage;
-//   NoBookmarkedPostsFailure([this.messsage]);
-// }

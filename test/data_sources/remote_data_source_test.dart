@@ -21,7 +21,7 @@ void main() {
 
   setUp(() {
     mockPostApiService = MockPostApiService();
-    sut = RemoteDataSource(mockPostApiService);
+    sut = RemoteDataSourceImpl(mockPostApiService);
   });
 
   group(
@@ -40,7 +40,7 @@ void main() {
         (_) async => Response<List<PostModel>>(httpResponse, postsList),
       );
       // act
-      final result = await sut.fetchPostsList();
+      final result = await sut.fetchPosts();
       // assert
       expect(result, AsyncData(postsList));
     }),

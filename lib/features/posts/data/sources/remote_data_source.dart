@@ -9,14 +9,21 @@ import 'package:flutter_tech_task/features/posts/data/models/post_model.dart';
 
 final remoteDataSourceProvider = Provider<RemoteDataSource>((ref) {
   final _postApiService = PostsApiService.create();
-  return RemoteDataSource(_postApiService);
+  return RemoteDataSourceImpl(_postApiService);
 });
 
-class RemoteDataSource {
-  RemoteDataSource(this._postApiService);
+abstract class RemoteDataSource {
+  Future<AsyncValue<PostModel>> fetchPost(int postId);
+  Future<AsyncValue<List<CommentModel>>> fetchComments(int postId);
+  Future<AsyncValue<List<PostModel>>> fetchPosts();
+}
+
+class RemoteDataSourceImpl implements RemoteDataSource {
+  RemoteDataSourceImpl(this._postApiService);
   final PostsApiService _postApiService;
 
-  Future<AsyncValue<List<PostModel>>> fetchPostsList() async {
+  @override
+  Future<AsyncValue<List<PostModel>>> fetchPosts() async {
     try {
       final Response<List<PostModel>> response =
           await _postApiService.fetchPosts();
@@ -30,6 +37,7 @@ class RemoteDataSource {
     }
   }
 
+  @override
   Future<AsyncValue<PostModel>> fetchPost(int postId) async {
     try {
       final Response<PostModel> response =
@@ -44,6 +52,7 @@ class RemoteDataSource {
     }
   }
 
+  @override
   Future<AsyncValue<List<CommentModel>>> fetchComments(int postId) async {
     try {
       final Response<List<CommentModel>> response =

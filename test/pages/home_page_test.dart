@@ -34,7 +34,7 @@ void main() {
           child: const MyApp(),
         ),
       );
-      when(() => mockRemoteDataSource.fetchPostsList())
+      when(() => mockRemoteDataSource.fetchPosts())
           .thenAnswer((invocation) => Future.value(const AsyncData(postsList)));
 
       // act
@@ -56,7 +56,7 @@ void main() {
       "Able to save posts and view it in the BookmarksView",
       (WidgetTester tester) async {
         // arrange
-        when(() => mockRemoteDataSource.fetchPostsList()).thenAnswer(
+        when(() => mockRemoteDataSource.fetchPosts()).thenAnswer(
           (invocation) => Future.value(const AsyncData(postsList)),
         );
         SharedPreferences.setMockInitialValues({"saved_post_ids": []});

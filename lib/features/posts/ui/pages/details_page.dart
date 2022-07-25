@@ -6,6 +6,7 @@ import 'package:flutter_tech_task/core/router/router.gr.dart';
 import 'package:flutter_tech_task/core/theme/theme_data.dart';
 import 'package:flutter_tech_task/features/posts/data/models/post_model.dart';
 import 'package:flutter_tech_task/features/posts/ui/providers/post_provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class DetailsPage extends ConsumerWidget {
   const DetailsPage({@PathParam('postId') required this.postId, Key? key})
@@ -24,12 +25,22 @@ class DetailsPage extends ConsumerWidget {
       body: _asyncPost.when(
         data: (_post) => Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Column(   
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_post.title, style: Theme.of(context).textTheme.headline6),
+              Text(
+                _post.title,
+                style: Theme.of(context).textTheme.headline6?.copyWith(
+                      fontSize: 20.sp,
+                    ),
+              ),
               const SizedBox(height: 8),
-              Text(_post.body, style: Theme.of(context).textTheme.bodyText1),
+              Text(
+                _post.body,
+                style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      fontSize: 16.sp,
+                    ),
+              ),
               const SizedBox(height: 8),
               TextButton(
                 onPressed: () => AutoRouter.of(context)
@@ -37,15 +48,15 @@ class DetailsPage extends ConsumerWidget {
                 style: buttonStyle,
                 child: Text(
                   "Comments",
-                  style: Theme.of(context).textTheme.button,
+                  style: Theme.of(context).textTheme.button?.copyWith(
+                        fontSize: 16.sp,
+                      ),
                 ),
               ),
             ],
           ),
         ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, st) => handleErrorUI(err, st),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:flutter_tech_task/core/errors/failures.dart';
 import 'package:flutter_tech_task/features/posts/data/sources/remote_data_source.dart';
 import 'package:flutter_tech_task/features/posts/ui/pages/comments_page.dart';
 import 'package:flutter_tech_task/features/posts/ui/pages/details_page.dart';
+import 'package:flutter_tech_task/features/posts/ui/providers/comments_provider.dart';
 import 'package:flutter_tech_task/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,7 +30,7 @@ void main() {
       "displays comments from the selected post",
       (WidgetTester tester) async {
         // arrange
-        when(() => mockRemoteDataSource.fetchPostsList()).thenAnswer(
+        when(() => mockRemoteDataSource.fetchPosts()).thenAnswer(
           (invocation) => Future.value(const AsyncData(postsList)),
         );
         when(() => mockRemoteDataSource.fetchPost(1))
@@ -64,7 +65,8 @@ void main() {
 
         // * Comments page is built and comments are displayed
         expect(find.byType(CommentsPage), findsOneWidget);
-        for (final comment in comments) {
+        final displayedComments = sortComments(filterComments(comments));
+        for (final comment in displayedComments) {
           expect(find.text(comment.name), findsOneWidget);
           expect(find.text(comment.email), findsOneWidget);
           expect(find.text(comment.body), findsOneWidget);
@@ -77,7 +79,7 @@ void main() {
       (WidgetTester tester) async {
         // arrange
 
-        when(() => mockRemoteDataSource.fetchPostsList()).thenAnswer(
+        when(() => mockRemoteDataSource.fetchPosts()).thenAnswer(
           (invocation) => Future.value(const AsyncData(postsList)),
         );
         SharedPreferences.setMockInitialValues({
@@ -122,7 +124,8 @@ void main() {
 
         // * Comments Page is built and selected post is displayed
         expect(find.byType(CommentsPage), findsOneWidget);
-        for (final comment in comments) {
+        final displayedComments = sortComments(filterComments(comments));
+        for (final comment in displayedComments) {
           expect(find.text(comment.name), findsOneWidget);
           expect(find.text(comment.email), findsOneWidget);
           expect(find.text(comment.body), findsOneWidget);

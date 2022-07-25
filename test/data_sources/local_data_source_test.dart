@@ -20,17 +20,16 @@ void main() {
 
   setUp(() {
     mockRemoteDataSource = MockRemoteDataSource();
-    sut = LocalDataSource(mockRemoteDataSource);
+    sut = LocalDataSourceImpl(mockRemoteDataSource);
   });
 
   group("updateSavedPostIds", () {
     test("should save post ids", () async {
       // arrange
-      // SharedPreferences.setMockInitialValues({});
       final List<int> postIds = [1, 2, 3];
       final prefs = await SharedPreferences.getInstance();
       // act
-      await sut.updateSavedPostIds(postIds);
+      await sut.savePostIds(postIds);
       final List<String> result = prefs.getStringList("saved_post_ids")!;
       // assert
       expect(
@@ -50,7 +49,7 @@ void main() {
         postIds.map((e) => e.toString()).toList(),
       );
       // act
-      final result = await sut.fetchSavedPostIds();
+      final result = await sut.getPostIds();
       // assert
       expect(postIds, result);
     });
@@ -79,7 +78,7 @@ void main() {
           .thenAnswer((invocation) => Future.value(AsyncData(comments)));
 
       // act
-      await sut.savePost(1);
+      await sut.savePostAndComments(1);
 
       // assert
       final prefs = await SharedPreferences.getInstance();

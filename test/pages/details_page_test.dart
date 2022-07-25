@@ -28,7 +28,7 @@ void main() {
       "displays selected post",
       (WidgetTester tester) async {
         // arrange
-        when(() => mockRemoteDataSource.fetchPostsList()).thenAnswer(
+        when(() => mockRemoteDataSource.fetchPosts()).thenAnswer(
           (invocation) => Future.value(const AsyncData(postsList)),
         );
         when(() => mockRemoteDataSource.fetchPost(1))
@@ -62,7 +62,7 @@ void main() {
       (WidgetTester tester) async {
         // arrange
 
-        when(() => mockRemoteDataSource.fetchPostsList()).thenAnswer(
+        when(() => mockRemoteDataSource.fetchPosts()).thenAnswer(
           (invocation) => Future.value(const AsyncData(postsList)),
         );
         SharedPreferences.setMockInitialValues({

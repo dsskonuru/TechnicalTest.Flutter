@@ -19,23 +19,54 @@ class CommentsNotifier extends StateNotifier<AsyncValue<List<CommentModel>>> {
     this._remoteDataSource,
     this._postId,
   ) : super(const AsyncLoading()) {
-    fetchComments(_postId);
+    _fetchComments(_postId);
   }
   final LocalDataSource _localDataSource;
   final RemoteDataSource _remoteDataSource;
   final int _postId;
 
-  Future<void> fetchComments(int postId) async {
+  Future<void> _fetchComments(int postId) async {
     final _comments = await _remoteDataSource.fetchComments(postId);
     if (_comments.error == NoConnectionFailure) {
-      final _postIds = await _localDataSource.fetchSavedPostIds();
+      final _postIds = await _localDataSource.getPostIds();
       if (_postIds.contains(postId)) {
-        final _savedComments =
-            await _localDataSource.fetchSavedComments(postId);
-        state = AsyncData(_savedComments);
+        final _savedComments = await _localDataSource.getComments(postId);
+        final _filteredComments = filterComments(_savedComments);
+        final _sortedComments = sortComments(_filteredComments);
+        state = AsyncData(_sortedComments);
       }
     } else {
-      state = _comments;
+      final _filteredComments = filterComments(_comments.value!);
+      final _sortedComments = sortComments(_filteredComments);
+      state = AsyncData(_sortedComments);
     }
   }
+}
+
+List<CommentModel> sortComments(List<CommentModel> comments) {
+  final List<CommentModel> _sortedComments = [];
+  for (int i = 0; i < comments.length; i++) {
+    for (int j = 0; j < _sortedComments.length; j++) {
+      if (comments[i].body.length < _sortedComments[j].body.length) {
+        _sortedComments.insert(j, comments[i]);
+        break;
+      }
+    }
+    if (!_sortedComments.contains(comments[i])) {
+      _sortedComments.add(comments[i]);
+    }
+  }
+  return _sortedComments;
+}
+
+List<CommentModel> filterComments(List<CommentModel> comments) {
+  final List<CommentModel> _filteredComments = [];
+  if (comments.length > 20) {
+    for (int i = 0; i < comments.length; i++) {
+      if (comments[i].body.length < 140) {
+        _filteredComments.add(comments[i]);
+      }
+    }
+  }
+  return _filteredComments;
 }

@@ -3,53 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tech_task/core/errors/error_ui.dart';
 import 'package:flutter_tech_task/features/posts/ui/providers/comments_provider.dart';
+import 'package:flutter_tech_task/features/posts/ui/widgets/comment_widget.dart';
+import 'package:flutter_tech_task/features/posts/ui/widgets/no_comments_widget.dart';
 
-class CommentsPage extends ConsumerWidget {
+class CommentsPage extends ConsumerStatefulWidget {
   const CommentsPage({@PathParam('postId') required this.postId, Key? key})
       : super(key: key);
-
   final int postId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _asyncComments = ref.watch(commentsProvider(postId));
+  ConsumerState<ConsumerStatefulWidget> createState() => _CommentsPageState();
+}
+
+class _CommentsPageState extends ConsumerState<CommentsPage> {
+  @override
+  Widget build(BuildContext context) {
+    final _asyncComments = ref.watch(commentsProvider(widget.postId));
     return Scaffold(
       appBar: AppBar(
-        title: Text('Post $postId'),
+        title: Text('Post ${widget.postId}'),
       ),
       body: _asyncComments.when(
-        data: (_comments) => ListView.builder(
-          itemCount: _comments.length,
-          itemBuilder: (context, index) => Card(
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _comments[index].name,
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  Text(
-                    _comments[index].email,
-                    style: Theme.of(context).textTheme.subtitle2,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _comments[index].body,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        data: (_comments) {
+          if (_comments.isEmpty) {
+            return const NoCommentsWidget();
+          }
+          return ListView.builder(
+            itemCount: _comments.length,
+            itemBuilder: (context, index) => CommentWidget(_comments[index]),
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, st) => handleErrorUI(err, st),
       ),
     );

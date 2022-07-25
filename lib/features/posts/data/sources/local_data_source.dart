@@ -9,14 +9,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 final localDataSourceProvider = Provider<LocalDataSource>((ref) {
   final _remoteDataSource = ref.read(remoteDataSourceProvider);
-  return LocalDataSource(_remoteDataSource);
+  return LocalDataSourceImpl(_remoteDataSource);
 });
 
-class LocalDataSource {
-  LocalDataSource(this._remoteDataSource);
+abstract class LocalDataSource {
+  Future<void> savePostIds(List<int> postIds);
+  Future<List<int>> getPostIds();
+
+  Future<AsyncValue<void>> savePostAndComments(int postId);
+  Future<void> removePost(int postId);
+
+  Future<PostModel> getPost(int postId);
+  Future<List<CommentModel>> getComments(int postId);
+
+  Future<List<PostModel>> getPosts();
+}
+
+class LocalDataSourceImpl implements LocalDataSource {
+  LocalDataSourceImpl(this._remoteDataSource);
   final RemoteDataSource _remoteDataSource;
 
-  Future<void> updateSavedPostIds(List<int> savedPostIds) async {
+  @override
+  Future<void> savePostIds(List<int> savedPostIds) async {
     final prefs = await SharedPreferences.getInstance();
     final _isSaved = await prefs.setStringList(
       "saved_post_ids",
@@ -27,7 +41,8 @@ class LocalDataSource {
     }
   }
 
-  Future<List<int>> fetchSavedPostIds() async {
+  @override
+  Future<List<int>> getPostIds() async {
     final prefs = await SharedPreferences.getInstance();
     final savedPostIds = prefs.getStringList("saved_post_ids");
     if (savedPostIds != null) {
@@ -37,7 +52,8 @@ class LocalDataSource {
     }
   }
 
-  Future<AsyncValue<void>> savePost(int postId) async {
+  @override
+  Future<AsyncValue<void>> savePostAndComments(int postId) async {
     final prefs = await SharedPreferences.getInstance();
     try {
       final AsyncValue<PostModel> _asyncPost =
@@ -62,7 +78,8 @@ class LocalDataSource {
     }
   }
 
-  Future<void> removeSavedPost(int postId) async {
+  @override
+  Future<void> removePost(int postId) async {
     final prefs = await SharedPreferences.getInstance();
     final _postRemoval = await prefs.remove("post_$postId");
     final _commentsRemoval = await prefs.remove("comments_$postId");
@@ -73,7 +90,8 @@ class LocalDataSource {
     }
   }
 
-  Future<PostModel> fetchSavedPost(int postId) async {
+  @override
+  Future<PostModel> getPost(int postId) async {
     final prefs = await SharedPreferences.getInstance();
     final String? _postJson = prefs.getString("post_$postId");
     if (_postJson != null) {
@@ -85,7 +103,8 @@ class LocalDataSource {
     }
   }
 
-  Future<List<CommentModel>> fetchSavedComments(int postId) async {
+  @override
+  Future<List<CommentModel>> getComments(int postId) async {
     final prefs = await SharedPreferences.getInstance();
     final String? _commentsJson = prefs.getString("comments_$postId");
     if (_commentsJson != null) {
@@ -100,11 +119,12 @@ class LocalDataSource {
     }
   }
 
-  Future<List<PostModel>> fetchSavedPosts() async {
-    final List<int> _savedPostIds = await fetchSavedPostIds();
+  @override
+  Future<List<PostModel>> getPosts() async {
+    final List<int> _savedPostIds = await getPostIds();
     final List<PostModel> _posts = [];
     for (final postId in _savedPostIds) {
-      final _savedPost = await fetchSavedPost(postId);
+      final _savedPost = await getPost(postId);
       _posts.add(_savedPost);
     }
     return _posts;
